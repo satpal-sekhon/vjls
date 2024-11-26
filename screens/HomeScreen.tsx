@@ -12,7 +12,7 @@ const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
         <Card.Content>
           <View style={[styles.locationContainer]}>
             <FeatherIcon name="map-pin" size={18} color={theme.colors.primary} style={styles.locationIcon} />
-            <Title>Today's Location</Title>
+            <Title>Today's Locatioaan</Title>
           </View>
           <Paragraph>Today is your duty at: <Text style={{ fontWeight: 'bold' }}>{`National Water Comission`}</Text></Paragraph>
         </Card.Content>

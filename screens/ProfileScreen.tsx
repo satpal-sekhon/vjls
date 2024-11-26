@@ -1,56 +1,99 @@
-import React from 'react';
-import { View, StyleSheet, TouchableOpacity } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { Avatar, Text, Button } from 'react-native-paper';
 import FeatherIcon from 'react-native-vector-icons/Feather';
 import theme from '../theme';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { StackNavigationProp } from '@react-navigation/stack';
+import axios from 'axios';
+import config from '../config';
 
 type Props = {
   navigation: StackNavigationProp<any>;
 };
 
+const formatIndianPhoneNumber = (phoneNumber: string): string | null => {
+  if(!phoneNumber) { return `N/A` }
+  const cleanNumber = phoneNumber.replace(/\D/g, '');
+  if (cleanNumber.length === 10) {
+    return `+91 ${cleanNumber.slice(0, 5)} ${cleanNumber.slice(5)}`;
+  }
+  return phoneNumber;
+};
+
+const userDefaultImage = `${config.serverBasePath}assets/images/user.jpg`;
+
 const ProfileScreen: React.FC<Props> = ({ navigation }) => {
+  const [isLoading, setIsLoading] = useState(true);
+  const [userProfile, setUserProfile] = useState({}) as any;
+
+  useEffect(() => {
+    const getUserProfile = async () => {
+      try {
+        const userToken = await AsyncStorage.getItem('@userToken');
+        const response = await axios.get(`${config.apiEndpoint}guard/profile`, {
+          headers: {
+            'Authorization': `Bearer ${userToken}`,
+          },
+        });
+        const { data } = response.data;
+        setUserProfile(data);
+        setIsLoading(false);
+      } catch (error) {
+        console.error('Error fetching profile:', error);
+        Alert.alert('Error', 'Failed to retrieve user profile.');
+      }
+    };
+
+    getUserProfile();
+  }, []);
 
   const logOut = async () => {
     await AsyncStorage.removeItem('@userToken');
+    setUserProfile(null);
     navigation.navigate('HomeTabs');
+  };
+
+  if (isLoading) {
+    return <Text>Loading...</Text>;
   }
 
   return (
     <View style={styles.container}>
       <TouchableOpacity style={styles.addressContainer}>
         <View style={styles.avatarContainer}>
-          <Avatar.Image size={150} source={{ uri: 'https://via.placeholder.com/150' }} />
-          <TouchableOpacity style={styles.editIconContainer}>
+          <Avatar.Image size={150} style={styles.avatar} source={{ uri: userProfile.profile_picture || userDefaultImage }} />
+          <TouchableOpacity style={styles.editIconContainer} onPress={() => Alert.alert('Feature will launched soon!')}>
             <FeatherIcon name="edit" size={24} color={theme.colors.primary} />
           </TouchableOpacity>
 
-          <Text variant="headlineSmall" style={styles.name}>Satpal Singh Sekhon</Text>
-          <Text style={styles.bio}>Armed Guard</Text>
+          <Text variant="headlineSmall" style={styles.name}>{userProfile.first_name} {userProfile.middle_name}</Text>
+          {/* <Text style={styles.bio}>{userProfile.bio}</Text> */}
 
-          <View style={[styles.alignCenter, styles.spacingSmallTop]}>
+          {/* <View style={[styles.alignCenter, styles.spacingSmallTop]}>
             <FeatherIcon name="map-pin" size={18} color={theme.colors.primary} />
-            <Text style={styles.iconText}>Mohali, Chandigarh</Text>
-          </View>
+            <Text style={styles.iconText}>{userProfile.location}</Text>
+          </View> */}
         </View>
       </TouchableOpacity>
 
       <TouchableOpacity style={[styles.contactContainer, styles.spacingMediumTop]}>
         <FeatherIcon name="phone" size={24} color={theme.colors.success} />
-        <Text variant="titleMedium" style={styles.iconText}>+91 88725 25710</Text>
+        <Text variant="titleMedium" style={styles.iconText}>{formatIndianPhoneNumber(userProfile.phone_number)}</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.contactContainer}>
-        <FeatherIcon name="mail" size={24} color={theme.colors.warning} />
-        <Text variant="titleMedium" style={styles.iconText}>satpalsekhon@gmail.com</Text>
-      </TouchableOpacity>
+      {userProfile.email ?
+        <TouchableOpacity style={styles.contactContainer}>
+          <FeatherIcon name="mail" size={24} color={theme.colors.warning} />
+          <Text variant="titleMedium" style={styles.iconText}>{userProfile.email}</Text>
+        </TouchableOpacity>
+        : null}
 
       <View style={[styles.spaceHorizontal, styles.spacingMediumTop]}>
-        <Button 
-          mode="contained" 
+        <Button
+          mode="contained"
           icon={() => <FeatherIcon name="log-out" size={20} color={theme.colors.white} />}
-          buttonColor={theme.colors.accent} 
+          buttonColor={theme.colors.accent}
           onPress={logOut}>
           Log Out
         </Button>
@@ -58,6 +101,7 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
     </View>
   );
 };
+
 
 const styles = StyleSheet.create({
   container: {
@@ -71,6 +115,9 @@ const styles = StyleSheet.create({
   avatarContainer: {
     width: '100%',
     alignItems: 'center',
+  },
+  avatar: {
+    backgroundColor: 'transparent'
   },
   iconText: {
     marginLeft: 8,
