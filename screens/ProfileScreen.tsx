@@ -62,7 +62,7 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
     <View style={styles.container}>
       <TouchableOpacity style={styles.addressContainer}>
         <View style={styles.avatarContainer}>
-          <Avatar.Image size={150} style={styles.avatar} source={{ uri: userProfile.profile_picture || userDefaultImage }} />
+          <Avatar.Image size={150} style={styles.avatar} source={{ uri: userProfile?.profile_picture || userDefaultImage }} />
           <TouchableOpacity style={styles.editIconContainer} onPress={() => Alert.alert('Feature will launched soon!')}>
             <FeatherIcon name="edit" size={24} color={theme.colors.primary} />
           </TouchableOpacity>
@@ -93,7 +93,7 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
         <Button
           mode="contained"
           icon={() => <FeatherIcon name="log-out" size={20} color={theme.colors.white} />}
-          buttonColor={theme.colors.accent}
+          style={[{ backgroundColor: theme.colors.primary }]}
           onPress={logOut}>
           Log Out
         </Button>

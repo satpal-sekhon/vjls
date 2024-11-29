@@ -32,7 +32,7 @@ const HomeTabs = () => (
         paddingBottom: 10,
         height: 50,
       },
-      tabBarActiveTintColor: theme.colors.secondary,
+      tabBarActiveTintColor: theme.colors.activeTabColor,
       tabBarInactiveTintColor: theme.colors.accent, 
       headerShown: false
     }}
@@ -44,7 +44,7 @@ const HomeTabs = () => (
         tabBarLabel: () => null,
         tabBarIcon: ({ color, size }) => (
           <Ionicons
-            name={color === theme.colors.secondary ? 'home' : 'home-outline'}
+            name={color === theme.colors.activeTabColor ? 'home' : 'home-outline'}
             color={color}
             size={size}
           />

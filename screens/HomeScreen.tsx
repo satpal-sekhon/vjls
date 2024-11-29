@@ -1,26 +1,35 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, ScrollView } from 'react-native';
 import { Button, Card, Title, Paragraph, Text } from 'react-native-paper';
 import theme from '../theme';
 import PunchButton from './components/PunchButton';
 import FeatherIcon from 'react-native-vector-icons/Feather';
+import UpcomingHolidays from './components/UpcomingHolidays';
+import LeaveStatus from './components/LeaveCount';
+import MyAttendance from './components/MyAttendance';
 
 const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
+      <Title>Welcome Sekhon!</Title>
+
       <Card>
         <Card.Content>
           <View style={[styles.locationContainer]}>
             <FeatherIcon name="map-pin" size={18} color={theme.colors.primary} style={styles.locationIcon} />
-            <Title>Today's Locatioaan</Title>
+            <Title>Today's Location</Title>
           </View>
-          <Paragraph>Today is your duty at: <Text style={{ fontWeight: 'bold' }}>{`National Water Comission`}</Text></Paragraph>
+          <Paragraph style={[styles.locationText]}>Today is your duty at: <Text style={{ fontWeight: 'bold' }}>{`Mohali, Chandigarh`}</Text></Paragraph>
         </Card.Content>
       </Card>
 
-      <View style={styles.buttonContainer}>
-        <PunchButton />
-      </View>
+      <PunchButton />
+
+      <UpcomingHolidays />
+
+      <LeaveStatus />
+      
+      <MyAttendance />
 
       <View style={styles.linksContainer}>
         <Button
@@ -56,15 +65,13 @@ const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
           Emergency Contact
         </Button>
       </View>
-    </View>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
     padding: 16,
   },
   locationContainer: {
@@ -75,6 +82,9 @@ const styles = StyleSheet.create({
   locationIcon: {
     paddingRight: 6,
     fontWeight: '900'
+  },
+  locationText:{
+    textAlign : 'center'
   },
   buttonContainer: {
     flexDirection: 'row',

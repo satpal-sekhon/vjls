@@ -8,6 +8,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import ErrorMessage from './components/ErrorMessage';
 import axios from 'axios';
 import config from '../config';
+import { Image } from 'react-native';
 
 type Props = {
   navigation: StackNavigationProp<any>;
@@ -69,6 +70,11 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
   return (
     <PaperProvider>
       <View style={styles.container}>
+      <Image
+        source={require('../assets/images/logo.jpeg')}  // Adjust the path to your logo image
+        style={styles.logo}
+      />
+
         <Text style={styles.title}>Login</Text>
 
         <ErrorMessage
@@ -142,8 +148,14 @@ const styles = StyleSheet.create({
     padding: 20,
     backgroundColor: theme.colors.background,
   },
+  logo: {
+    width: '100%',    
+    height: 150,   
+    marginBottom: 20,
+    textAlign: 'center'  
+  },
   title: {
-    fontSize: 24,
+    fontSize: 26,
     marginBottom: 20,
     textAlign: 'center',
     color: theme.colors.text,
