@@ -6,7 +6,7 @@ const theme = {
     background: '#ffffff',
     white: '#fff',
     text: '#105691',
-    error: '#BA181B',
+    error: '#ff1a1a',
     warning: '#F3C623',
     success: '#72BF78',
     border: '#105691',

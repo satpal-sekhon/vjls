@@ -52,7 +52,7 @@ const AttendanceScreen: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      <Appbar.Header style={{ backgroundColor: theme.colors.accent }}>
+      <Appbar.Header style={{ backgroundColor: theme.colors.primary }}>
         <Appbar.Content title="My Attendance" titleStyle={{ color: theme.colors.white }} />
       </Appbar.Header>
 

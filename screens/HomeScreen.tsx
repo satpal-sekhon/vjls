@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
 import { Button, Card, Title, Paragraph, Text } from 'react-native-paper';
 import theme from '../theme';
@@ -7,11 +7,29 @@ import FeatherIcon from 'react-native-vector-icons/Feather';
 import UpcomingHolidays from './components/UpcomingHolidays';
 import LeaveStatus from './components/LeaveCount';
 import MyAttendance from './components/MyAttendance';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
+  const [user, setUser] = useState(null) as any;
+
+  useEffect(()=>{
+    const fetchUserInfo = async () => {
+      try {
+        const userInfo = await AsyncStorage.getItem('@userInfo');
+        if(userInfo){
+          setUser(JSON.parse(userInfo));
+        }
+      } catch (error) {
+        console.error('Error fetching user info', error);
+      }
+    };
+
+    fetchUserInfo();
+  }, [])
+
   return (
     <ScrollView style={styles.container}>
-      <Title>Welcome Sekhon!</Title>
+      <Title style={{marginBottom: 6 }}>Welcome {user?.first_name}!</Title>
 
       <Card>
         <Card.Content>

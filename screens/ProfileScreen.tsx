@@ -51,18 +51,22 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
   const logOut = async () => {
     await AsyncStorage.removeItem('@userToken');
     setUserProfile(null);
-    navigation.navigate('HomeTabs');
+    navigation.navigate('Login');
   };
 
   if (isLoading) {
     return <Text>Loading...</Text>;
   }
 
+  if(!userProfile){
+    navigation.navigate('Login');
+  }
+
   return (
     <View style={styles.container}>
       <TouchableOpacity style={styles.addressContainer}>
         <View style={styles.avatarContainer}>
-          <Avatar.Image size={150} style={styles.avatar} source={{ uri: userProfile?.profile_picture || userDefaultImage }} />
+          <Avatar.Image size={150} style={styles.avatar} source={{ uri: userProfile.profile_picture || userDefaultImage }} />
           <TouchableOpacity style={styles.editIconContainer} onPress={() => Alert.alert('Feature will launched soon!')}>
             <FeatherIcon name="edit" size={24} color={theme.colors.primary} />
           </TouchableOpacity>
