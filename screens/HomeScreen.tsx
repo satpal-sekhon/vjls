@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
-import { Card, Title, Paragraph, Text } from 'react-native-paper';
+import { Card, Title, Paragraph, Text, ActivityIndicator } from 'react-native-paper';
 import theme from '../theme';
 import PunchButton from './components/PunchButton';
 import FeatherIcon from 'react-native-vector-icons/Feather';
@@ -8,15 +8,16 @@ import UpcomingHolidays from './components/UpcomingHolidays';
 import LeaveStatus from './components/LeaveCount';
 import MyAttendance from './components/MyAttendance';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Skeleton } from '@rneui/themed';
 
 const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [user, setUser] = useState(null) as any;
 
-  useEffect(()=>{
+  useEffect(() => {
     const fetchUserInfo = async () => {
       try {
         const userInfo = await AsyncStorage.getItem('@userInfo');
-        if(userInfo){
+        if (userInfo) {
           setUser(JSON.parse(userInfo));
         }
       } catch (error) {
@@ -29,7 +30,9 @@ const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
 
   return (
     <ScrollView style={styles.container}>
-      <Title style={{marginBottom: 6 }}>Welcome {user?.first_name}!</Title>
+      {!user ? 
+      <Skeleton width={180} height={18} style={{ marginBottom: 6 }} /> : 
+      <Title style={{ marginBottom: 6 }}>Welcome {user?.first_name}!</Title> }
 
       <Card style={{ backgroundColor: theme.colors.white }}>
         <Card.Content>
@@ -46,7 +49,7 @@ const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
       <UpcomingHolidays />
 
       <LeaveStatus />
-      
+
       <MyAttendance />
 
       {/* <View style={styles.linksContainer}>
@@ -102,8 +105,8 @@ const styles = StyleSheet.create({
     paddingRight: 6,
     fontWeight: '900'
   },
-  locationText:{
-    textAlign : 'center'
+  locationText: {
+    textAlign: 'center'
   },
   buttonContainer: {
     flexDirection: 'row',

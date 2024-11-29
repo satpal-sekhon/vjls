@@ -118,8 +118,15 @@ const PunchButton: React.FC = () => {
                         },
                     });
 
-                    let { data } = response.data;
+                    let { success } = response.data;
+                    if(!success){
+                        setIsPunching(false);
+                        Alert.alert(response.data.message);
+                        return;
+                    }
+                    
                     if (prefix === 'in') {
+                        let { data } = response.data;
                         await AsyncStorage.setItem('@punchInfo', JSON.stringify(data));
                     } else {
                         await AsyncStorage.removeItem('@punchInfo');
@@ -128,6 +135,7 @@ const PunchButton: React.FC = () => {
                     setIsPunchedIn((prevState) => !prevState);
                     setIsPunching(false);
                 } catch (error) {
+                    console.log('error',error)
                     setIsPunching(false);
                     if (axios.isAxiosError(error) && error.response?.status) {
                         console.log('error', error)
@@ -162,7 +170,6 @@ const PunchButton: React.FC = () => {
 
 
     return (<View style={styles.buttonContainer}>
-
         {!isPunchedIn ? (
             <Button
                 mode="contained"
@@ -191,15 +198,17 @@ const PunchButton: React.FC = () => {
 
 const styles = StyleSheet.create({
     buttonContainer: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        width: '100%',
-        paddingHorizontal: 16,
+        width: '80%',
+        alignItems: 'center', // This will center the button horizontally within the container
+        justifyContent: 'center', // This will center the button vertically within the container
         marginTop: 20,
+        alignSelf: 'center', // This ensures the container itself is centered on the screen
     },
     button: {
         flex: 1,
         marginHorizontal: 8,
+        alignContent: 'center',
+        width: 160,
     },
     preview: {
         flex: 1,

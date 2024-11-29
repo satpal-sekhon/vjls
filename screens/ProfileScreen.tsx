@@ -66,12 +66,12 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
     <View style={styles.container}>
       <TouchableOpacity style={styles.addressContainer}>
         <View style={styles.avatarContainer}>
-          <Avatar.Image size={150} style={styles.avatar} source={{ uri: userProfile.profile_picture || userDefaultImage }} />
+          <Avatar.Image size={150} style={styles.avatar} source={{ uri: userProfile?.profile_picture || userDefaultImage }} />
           <TouchableOpacity style={styles.editIconContainer} onPress={() => Alert.alert('Feature will launched soon!')}>
             <FeatherIcon name="edit" size={24} color={theme.colors.primary} />
           </TouchableOpacity>
 
-          <Text variant="headlineSmall" style={styles.name}>{userProfile.first_name} {userProfile.middle_name}</Text>
+          <Text variant="headlineSmall" style={styles.name}>{userProfile?.first_name} {userProfile?.middle_name}</Text>
           {/* <Text style={styles.bio}>{userProfile.bio}</Text> */}
 
           {/* <View style={[styles.alignCenter, styles.spacingSmallTop]}>
@@ -83,10 +83,10 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
 
       <TouchableOpacity style={[styles.contactContainer, styles.spacingMediumTop]}>
         <FeatherIcon name="phone" size={24} color={theme.colors.success} />
-        <Text variant="titleMedium" style={styles.iconText}>{formatIndianPhoneNumber(userProfile.phone_number)}</Text>
+        <Text variant="titleMedium" style={styles.iconText}>{formatIndianPhoneNumber(userProfile?.phone_number)}</Text>
       </TouchableOpacity>
 
-      {userProfile.email ?
+      {userProfile?.email ?
         <TouchableOpacity style={styles.contactContainer}>
           <FeatherIcon name="mail" size={24} color={theme.colors.warning} />
           <Text variant="titleMedium" style={styles.iconText}>{userProfile.email}</Text>

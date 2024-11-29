@@ -51,7 +51,7 @@ const AttendanceScreen: React.FC = () => {
   );
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
       <Appbar.Header style={{ backgroundColor: theme.colors.primary }}>
         <Appbar.Content title="My Attendance" titleStyle={{ color: theme.colors.white }} />
       </Appbar.Header>
@@ -110,6 +110,8 @@ const styles = StyleSheet.create({
   },
   card: {
     marginBottom: 16,
+    backgroundColor: theme.colors.white,
+    marginHorizontal: 2
   },
   list: {
     paddingBottom: 16,
