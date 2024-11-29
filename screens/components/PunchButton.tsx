@@ -169,10 +169,10 @@ const PunchButton: React.FC = () => {
                 onPress={handleTogglePunch}
                 style={[styles.button, { backgroundColor: theme.colors.secondary }]}
                 labelStyle={{ color: theme.colors.white }}
-                icon={() => <SimpleLineIcons name="energy" size={20} color={theme.colors.white} />}
+                icon={isPunching ? undefined : () => <SimpleLineIcons name="energy" size={20} color={theme.colors.white} />}
                 disabled={isPunching}
             >
-                {isPunching ? `Please wait` : `Punch In`}
+                {isPunching ? `Please wait...` : `Punch In`}
             </Button>
         ) : (
             <Button
@@ -183,7 +183,7 @@ const PunchButton: React.FC = () => {
                 icon={() => <SimpleLineIcons name="clock" size={20} color={theme.colors.white} />}
                 disabled={isPunching}
             >
-                {isPunching ? `Please wait` : `Punch Out`}
+                {isPunching ? `Please wait...` : `Punch Out`}
             </Button>
         )}
     </View>);

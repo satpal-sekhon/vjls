@@ -1,6 +1,7 @@
 import React from 'react';
 import { ScrollView, View, Text, StyleSheet } from 'react-native';
 import { Card, Title, Paragraph } from 'react-native-paper';
+import theme from '../../theme';
 
 const UpcomingHolidays = () => {
     const holidays = [
@@ -44,8 +45,9 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
     },
     card: {
-        width: '48%', // Adjust width to fit two cards per row
+        width: '48%',
         marginBottom: 16,
+        backgroundColor: theme.colors.white
     },
 });
 

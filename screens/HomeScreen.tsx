@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
-import { Button, Card, Title, Paragraph, Text } from 'react-native-paper';
+import { Card, Title, Paragraph, Text } from 'react-native-paper';
 import theme from '../theme';
 import PunchButton from './components/PunchButton';
 import FeatherIcon from 'react-native-vector-icons/Feather';
@@ -31,7 +31,7 @@ const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
     <ScrollView style={styles.container}>
       <Title style={{marginBottom: 6 }}>Welcome {user?.first_name}!</Title>
 
-      <Card>
+      <Card style={{ backgroundColor: theme.colors.white }}>
         <Card.Content>
           <View style={[styles.locationContainer]}>
             <FeatherIcon name="map-pin" size={18} color={theme.colors.primary} style={styles.locationIcon} />
@@ -49,7 +49,7 @@ const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
       
       <MyAttendance />
 
-      <View style={styles.linksContainer}>
+      {/* <View style={styles.linksContainer}>
         <Button
           mode="outlined"
           onPress={() => navigation.navigate('FAQ')}
@@ -82,7 +82,7 @@ const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
         >
           Emergency Contact
         </Button>
-      </View>
+      </View> */}
     </ScrollView>
   );
 };
@@ -91,6 +91,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
+    backgroundColor: theme.colors.background
   },
   locationContainer: {
     flexDirection: 'row',
