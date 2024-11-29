@@ -135,11 +135,8 @@ const PunchButton: React.FC = () => {
                     setIsPunchedIn((prevState) => !prevState);
                     setIsPunching(false);
                 } catch (error) {
-                    console.log('error',error)
                     setIsPunching(false);
                     if (axios.isAxiosError(error) && error.response?.status) {
-                        console.log('error', error)
-
                         Alert.alert(error.response.data.message || 'Something went wrong!');
                     } else {
                         Alert.alert("Error", `Failed to punch ${prefix}.`);

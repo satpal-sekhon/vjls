@@ -9,42 +9,67 @@ import LeaveStatus from './components/LeaveCount';
 import MyAttendance from './components/MyAttendance';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Skeleton } from '@rneui/themed';
+import axios from 'axios';
+import config from '../config';
 
 const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
-  const [user, setUser] = useState(null) as any;
+  const [user, setUser] = useState() as any;
+  const [stats, setStats] = useState({}) as any;
 
   useEffect(() => {
     const fetchUserInfo = async () => {
-      try {
-        const userInfo = await AsyncStorage.getItem('@userInfo');
-        if (userInfo) {
-          setUser(JSON.parse(userInfo));
-        }
-      } catch (error) {
-        console.error('Error fetching user info', error);
+      const userInfo = await AsyncStorage.getItem('@userInfo');
+      if (userInfo) {
+        setUser(JSON.parse(userInfo));
       }
     };
 
+    const fetchStats = async () => {
+      const userToken = await AsyncStorage.getItem('@userToken');
+      const response = await axios.get(`${config.apiEndpoint}stats`, {
+        headers: {
+          'Authorization': `Bearer ${userToken}`,
+        },
+      });
+      const { success } = response.data;
+      if (success) {
+        setStats(response.data);
+      }
+    }
+
     fetchUserInfo();
+    fetchStats();
   }, [])
 
   return (
     <ScrollView style={styles.container}>
-      {!user ? 
-      <Skeleton width={180} height={18} style={{ marginBottom: 6 }} /> : 
-      <Title style={{ marginBottom: 6 }}>Welcome {user?.first_name}!</Title> }
+      {!user ?
+        <Skeleton width={180} height={18} style={{ marginBottom: 6 }} /> :
+        <Title style={{ marginBottom: 6 }}>Welcome {user?.first_name}!</Title>}
 
-      <Card style={{ backgroundColor: theme.colors.white }}>
+      {stats.today_duty && stats.today_duty.client_site ? <>
+        <Card style={{ backgroundColor: theme.colors.white }}>
+          <Card.Content>
+            <View style={[styles.locationContainer]}>
+              <FeatherIcon name="map-pin" size={18} color={theme.colors.primary} style={styles.locationIcon} />
+              <Title>Today's Location</Title>
+            </View>
+            {stats.today_duty && stats.today_duty.client_site ?
+              <Paragraph style={[styles.locationText]}>Today is your duty at: <Text style={{ fontWeight: 'bold' }}>{stats.today_duty.client_site.location_code}</Text></Paragraph> :
+              <Paragraph style={[styles.locationText]}>Today is your duty at: <Text style={{ fontWeight: 'bold' }}>{`Mohali, Chandigarh`}</Text></Paragraph>}
+          </Card.Content>
+        </Card>
+        <PunchButton />
+      </>
+        : <Card style={{ backgroundColor: theme.colors.warning }}>
         <Card.Content>
           <View style={[styles.locationContainer]}>
-            <FeatherIcon name="map-pin" size={18} color={theme.colors.primary} style={styles.locationIcon} />
-            <Title>Today's Location</Title>
+            <FeatherIcon name="alert-circle" size={18} color={theme.colors.white} style={styles.locationIcon} />
+            <Title style={{ color: theme.colors.white }}>Duty is not assigned to you for today</Title>
           </View>
-          <Paragraph style={[styles.locationText]}>Today is your duty at: <Text style={{ fontWeight: 'bold' }}>{`Mohali, Chandigarh`}</Text></Paragraph>
         </Card.Content>
       </Card>
-
-      <PunchButton />
+      }
 
       <UpcomingHolidays />
 
