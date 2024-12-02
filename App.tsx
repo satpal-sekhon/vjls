@@ -1,5 +1,3 @@
-// App.tsx
-
 import React, { useEffect, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -19,6 +17,8 @@ import HelpAndComplaintsScreen from './screens/HelpAndComplaintsScreen';
 import EmergencyContactScreen from './screens/EmergencyContactScreen';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ActivityIndicator, SafeAreaView } from 'react-native';
+import { useNetwork } from './context/NetworkContext';
+import NoInternetScreen from './screens/NoInternetScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -104,6 +104,7 @@ const HomeTabs = () => (
 const App: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
+  const { isConnected } = useNetwork();
 
   useEffect(() => {
     const checkUserSession = async () => {
@@ -121,7 +122,6 @@ const App: React.FC = () => {
   }, []);
 
   if (isLoading) {
-    // Show a loading indicator while checking Async Storage
     return (
       <SafeAreaView style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
         <ActivityIndicator size="large" color="#0000ff" />
@@ -129,6 +129,11 @@ const App: React.FC = () => {
     );
   }
 
+  if (!isConnected) {
+    return (
+      <NoInternetScreen />
+    );
+  }
 
   return (
     <NavigationContainer>

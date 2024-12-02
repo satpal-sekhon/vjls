@@ -40,8 +40,9 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
         setUserProfile(data);
         setIsLoading(false);
       } catch (error) {
-        console.error('Error fetching profile:', error);
-        Alert.alert('Error', 'Failed to retrieve user profile.');
+        await AsyncStorage.removeItem('@userToken');
+        setUserProfile(null);
+        navigation.navigate('Login');
       }
     };
 

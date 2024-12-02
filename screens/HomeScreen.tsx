@@ -32,6 +32,7 @@ const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
         },
       });
       const { success } = response.data;
+      console.log('..',response.data)
       if (success) {
         setStats(response.data);
       }
@@ -54,21 +55,19 @@ const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
               <FeatherIcon name="map-pin" size={18} color={theme.colors.primary} style={styles.locationIcon} />
               <Title>Today's Location</Title>
             </View>
-            {stats.today_duty && stats.today_duty.client_site ?
-              <Paragraph style={[styles.locationText]}>Today is your duty at: <Text style={{ fontWeight: 'bold' }}>{stats.today_duty.client_site.location_code}</Text></Paragraph> :
-              <Paragraph style={[styles.locationText]}>Today is your duty at: <Text style={{ fontWeight: 'bold' }}>{`Mohali, Chandigarh`}</Text></Paragraph>}
+            <Paragraph style={[styles.locationText]}>Today is your duty at: <Text style={{ fontWeight: 'bold' }}>{stats.today_duty.client_site.location_code}</Text></Paragraph>
           </Card.Content>
         </Card>
         <PunchButton />
       </>
         : <Card style={{ backgroundColor: theme.colors.warning }}>
-        <Card.Content>
-          <View style={[styles.locationContainer]}>
-            <FeatherIcon name="alert-circle" size={18} color={theme.colors.white} style={styles.locationIcon} />
-            <Title style={{ color: theme.colors.white }}>Duty is not assigned to you for today</Title>
-          </View>
-        </Card.Content>
-      </Card>
+          <Card.Content>
+            <View style={[styles.locationContainer]}>
+              <FeatherIcon name="alert-circle" size={18} color={theme.colors.white} style={styles.locationIcon} />
+              <Title style={{ color: theme.colors.white }}>Duty is not assigned to you for today</Title>
+            </View>
+          </Card.Content>
+        </Card>
       }
 
       <UpcomingHolidays />
