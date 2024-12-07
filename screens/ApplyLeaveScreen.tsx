@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, Alert } from 'react-native';
+import { View, StyleSheet, Alert, TouchableWithoutFeedback, TextInput as RNTextInput } from 'react-native';
 import { Card, Text, TextInput, Button } from 'react-native-paper';
-import DatePicker from 'react-native-date-picker'; // Ensure this package is installed
+import DatePicker from 'react-native-date-picker';
 import theme from '../theme';
 
 const ApplyLeaveScreen = () => {
@@ -11,31 +11,34 @@ const ApplyLeaveScreen = () => {
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
     const [reason, setReason] = useState('');
+    const [isStartDatePickerOpen, setIsStartDatePickerOpen] = useState(false);
+    const [isEndDatePickerOpen, setIsEndDatePickerOpen] = useState(false);
 
-    // Format date as YYYY-MM-DD
     const formatDate = (date: Date) => {
         return date.toISOString().split('T')[0];
     };
 
-    // Handle leave application submission
     const handleApplyLeave = () => {
-        // Simple form validation
         if (!leaveType || !startDate || !endDate || !reason) {
             Alert.alert('Error', 'All fields are required!');
             return;
         }
 
-        // Check if end date is after start date
         if (new Date(startDate) > new Date(endDate)) {
             Alert.alert('Error', 'End date should be after the start date.');
             return;
         }
 
-        // Here you would send data to your backend or handle the submission
         console.log('Leave Applied:', { leaveType, startDate, endDate, reason });
 
-        // Show confirmation message
         Alert.alert('Success', 'Your leave application has been submitted.');
+    };
+
+    const getEndDateMinimumDate = () => {
+        if (startDate) {
+            return new Date(startDate);
+        }
+        return new Date();
     };
 
     return (
@@ -50,58 +53,62 @@ const ApplyLeaveScreen = () => {
                     style={styles.input}
                     placeholder="Enter leave type"
                 />
-                
-                {/* Start Date */}
-                <Button mode="contained" onPress={() => setOpen(true)}>Pick Start Date</Button>
 
-                {/* DatePicker modal for Start Date */}
-                {open && (
+                <TouchableWithoutFeedback onPress={() => setIsStartDatePickerOpen(true)}>
+                    <View>
+                        <TextInput
+                            label="Start Date"
+                            value={startDate}
+                            style={styles.input}
+                            placeholder="Pick start date"
+                            editable={false}
+                        />
+                    </View>
+                </TouchableWithoutFeedback>
+
+                {isStartDatePickerOpen && (
                     <DatePicker
                         modal
-                        open={open}
+                        open={isStartDatePickerOpen}
                         date={date}
+                        mode="date"
+                        minimumDate={new Date()}
                         onConfirm={(date) => {
-                            setOpen(false);
+                            setIsStartDatePickerOpen(false);
                             setDate(date);
-                            setStartDate(formatDate(date)); // Set the formatted date in the start date field
+                            setStartDate(formatDate(date));
                         }}
-                        onCancel={() => setOpen(false)}
+                        onCancel={() => setIsStartDatePickerOpen(false)}
                     />
                 )}
 
-                <TextInput
-                    label="Start Date"
-                    value={startDate}
-                    style={styles.input}
-                    placeholder="Enter start date"
-                    editable={false} // Prevent manual input
-                />
+                <TouchableWithoutFeedback onPress={() => setIsEndDatePickerOpen(true)}>
+                    <View>
+                        <TextInput
+                            label="End Date"
+                            value={endDate}
+                            style={styles.input}
+                            placeholder="Pick end date"
+                            editable={false}
+                        />
+                    </View>
+                </TouchableWithoutFeedback>
 
-                {/* End Date */}
-                <Button mode="contained" onPress={() => setOpen(true)}>Pick End Date</Button>
-
-                {/* DatePicker modal for End Date */}
-                {open && (
+                {isEndDatePickerOpen && (
                     <DatePicker
                         modal
-                        open={open}
+                        open={isEndDatePickerOpen}
                         date={date}
+                        mode="date"
+                        minimumDate={getEndDateMinimumDate()}
                         onConfirm={(date) => {
-                            setOpen(false);
+                            setIsEndDatePickerOpen(false);
                             setDate(date);
-                            setEndDate(formatDate(date)); // Set the formatted date in the end date field
+                            setEndDate(formatDate(date));
                         }}
-                        onCancel={() => setOpen(false)}
+                        onCancel={() => setIsEndDatePickerOpen(false)}
                     />
                 )}
-
-                <TextInput
-                    label="End Date"
-                    value={endDate}
-                    style={styles.input}
-                    placeholder="Enter end date"
-                    editable={false} // Prevent manual input
-                />
 
                 <TextInput
                     label="Reason"
@@ -110,7 +117,7 @@ const ApplyLeaveScreen = () => {
                     style={styles.input}
                     placeholder="Enter reason for leave"
                 />
-                
+
                 <Button mode="contained" style={styles.button} onPress={handleApplyLeave}>
                     Submit Leave Application
                 </Button>
