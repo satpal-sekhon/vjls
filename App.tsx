@@ -13,6 +13,7 @@ import FontAwesome6 from 'react-native-vector-icons/FontAwesome6';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import theme from './theme';
 import FAQScreen from './screens/FAQScreen';
+import ApplyLeaveScreen from './screens/ApplyLeaveScreen';
 import HelpAndComplaintsScreen from './screens/HelpAndComplaintsScreen';
 import EmergencyContactScreen from './screens/EmergencyContactScreen';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -26,14 +27,14 @@ const Stack = createStackNavigator();
 const HomeTabs = () => (
   <Tab.Navigator
     screenOptions={{
-      tabBarStyle: { 
+      tabBarStyle: {
         backgroundColor: theme.colors.primary,
         paddingTop: 10,
         paddingBottom: 10,
         height: 50,
       },
       tabBarActiveTintColor: theme.colors.activeTabColor,
-      tabBarInactiveTintColor: theme.colors.accent, 
+      tabBarInactiveTintColor: theme.colors.accent,
       headerShown: false
     }}
   >
@@ -73,7 +74,7 @@ const HomeTabs = () => (
         tabBarIcon: ({ color, size }) => {
           const IconComponent = color === theme.colors.secondary ? FontAwesome6 : MaterialIcons;
           const iconName = color === theme.colors.secondary ? 'money-bills' : 'money';
-          
+
           return (
             <IconComponent
               name={iconName}
@@ -140,6 +141,13 @@ const App: React.FC = () => {
       <Stack.Navigator initialRouteName={isUserLoggedIn ? "HomeTabs" : "Login"}>
         <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
         <Stack.Screen name="FAQ" component={FAQScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="ApplyLeave" component={ApplyLeaveScreen} options={{
+          title: 'Apply for Leave',
+          headerStyle: {
+            backgroundColor: theme.colors.secondary,
+          },
+          headerTintColor: theme.colors.white,
+        }} />
         <Stack.Screen name="HelpAndComplaints" component={HelpAndComplaintsScreen} options={{ headerShown: false }} />
         <Stack.Screen name="EmergencyContact" component={EmergencyContactScreen} options={{ headerShown: false }} />
         <Stack.Screen name="HomeTabs" component={HomeTabs} options={{ headerShown: false }} />

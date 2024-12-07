@@ -10,7 +10,8 @@ const theme = {
     warning: '#F3C623',
     success: '#72BF78',
     border: '#105691',
-    activeTabColor: '#0A3960'
+    activeTabColor: '#0A3960',
+    inactiveTabColor: '#caf0f8'
   },
 };
 

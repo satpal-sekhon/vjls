@@ -1,21 +1,21 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, FlatList } from 'react-native';
-import { Appbar, Card, Text, Button } from 'react-native-paper';
+import { View, StyleSheet, ScrollView, Text, TouchableOpacity } from 'react-native';
+import { Appbar, Card } from 'react-native-paper';
 import theme from '../theme';
-import FeatherIcon from 'react-native-vector-icons/Feather';
 
 interface AttendanceItem {
   id: string;
   date: string;
+  hours: string;
   status: string;
 }
 
 const attendanceData: AttendanceItem[] = [
-  { id: '1', date: '2024-10-01', status: 'Present' },
-  { id: '2', date: '2024-10-02', status: 'Absent' },
-  { id: '3', date: '2024-10-03', status: 'Present' },
-  { id: '4', date: '2024-10-04', status: 'Present' },
-  { id: '5', date: '2024-10-05', status: 'Absent' },
+  { id: '1', date: '2024-10-01', hours: '1:30 hrs', status: 'Present' },
+  { id: '2', date: '2024-10-02', hours: '-', status: 'Absent' },
+  { id: '3', date: '2024-10-03', hours: '1:30 hrs', status: 'Present' },
+  { id: '4', date: '2024-10-04', hours: '1:30 hrs', status: 'Present' },
+  { id: '5', date: '2024-10-05', hours: '-', status: 'Absent' },
 ];
 
 const getStatusColor = (status: string) => {
@@ -30,25 +30,54 @@ const getStatusColor = (status: string) => {
 };
 
 const AttendanceScreen: React.FC = () => {
-  const [showFilters, setShowFilters] = useState(false);
-  const [filteredData, setFilteredData] = useState(attendanceData);
+  const [activeTab, setActiveTab] = useState<'Previous' | 'Current' | 'Custom'>('Current');
 
-  const applyFilter = (status: string) => {
-    const newData = attendanceData.filter(item => item.status === status);
-    setFilteredData(newData);
-    setShowFilters(false);
+  const renderTableHeader = () => (
+    <View style={styles.tableRow}>
+      <Text style={styles.tableHeader}>Date</Text>
+      <Text style={styles.tableHeader}>Hours</Text>
+      <Text style={styles.tableHeader}>Status</Text>
+    </View>
+  );
+
+  const renderTableRows = (data: AttendanceItem[]) => {
+    return data.map((item) => (
+      <View key={item.id} style={styles.tableRow}>
+        <Text style={[styles.tableCell, { color: '#333' }]}>{item.date}</Text>
+        <Text style={[styles.tableCell, { color: '#333' }]}>{item.hours}</Text>
+        <Text style={[styles.tableCell, { color: getStatusColor(item.status) }]}>
+          {item.status}
+        </Text>
+      </View>
+    ));
   };
 
-  const renderItem = ({ item }: { item: AttendanceItem }) => (
-    <Card style={styles.card}>
-      <Card.Content>
-        <Text variant="bodyMedium">Date: {item.date}</Text>
-        <Text variant="bodySmall" style={{ color: getStatusColor(item.status) }}>
-          Status: {item.status}
-        </Text>
-      </Card.Content>
-    </Card>
-  );
+  const renderTabContent = () => {
+    switch (activeTab) {
+      case 'Previous':
+        return (
+          <ScrollView style={styles.tableContainer}>
+            {renderTableHeader()}
+            {renderTableRows(attendanceData)}
+          </ScrollView>
+        );
+      case 'Custom':
+        return (
+          <ScrollView style={styles.tableContainer}>
+            {renderTableHeader()}
+            {renderTableRows(attendanceData)}
+          </ScrollView>
+        );
+      case 'Current':
+      default:
+        return (
+          <ScrollView style={styles.tableContainer}>
+            {renderTableHeader()}
+            {renderTableRows(attendanceData)}
+          </ScrollView>
+        );
+    }
+  };
 
   return (
     <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
@@ -57,45 +86,19 @@ const AttendanceScreen: React.FC = () => {
       </Appbar.Header>
 
       <View style={styles.content}>
-        <View style={styles.filterRow}>
-          <Button 
-            mode="contained" 
-            onPress={() => setShowFilters(!showFilters)} 
-            style={styles.filterButton}
-            icon={() => <FeatherIcon name="filter" size={20} color={theme.colors.white} />}
-          >
-            {showFilters ? "Hide Filters" : "Apply Filters"}
-          </Button>
+        <View style={styles.tabRow}>
+          {['Previous', 'Current', 'Custom'].map(tab => (
+            <TouchableOpacity
+              key={tab}
+              onPress={() => setActiveTab(tab as 'Previous' | 'Current' | 'Custom')}
+              style={[styles.tabButton, activeTab === tab && styles.activeTab]}
+            >
+              <Text style={[styles.tabText, activeTab === tab && styles.activeTabText]}>{tab}</Text>
+            </TouchableOpacity>
+          ))}
         </View>
 
-        {showFilters && (
-          <Card style={styles.filterContainer}>
-            <Card.Content>
-              <Text variant="bodyMedium">Filter by:</Text>
-              <Button 
-                mode="outlined" 
-                onPress={() => applyFilter('Present')} 
-                style={styles.filterOption}
-              >
-                Present
-              </Button>
-              <Button 
-                mode="outlined" 
-                onPress={() => applyFilter('Absent')} 
-                style={styles.filterOption}
-              >
-                Absent
-              </Button>
-            </Card.Content>
-          </Card>
-        )}
-
-        <FlatList
-          data={filteredData}
-          renderItem={renderItem}
-          keyExtractor={(item) => item.id}
-          contentContainerStyle={styles.list}
-        />
+        {renderTabContent()}
       </View>
     </View>
   );
@@ -108,31 +111,51 @@ const styles = StyleSheet.create({
   content: {
     padding: 16,
   },
-  card: {
+  tableContainer: {
     marginBottom: 16,
     backgroundColor: theme.colors.white,
-    marginHorizontal: 2
+    padding: 10,
+    borderRadius: 10,
+    boxShadow: '0 0 10 1'
   },
-  list: {
-    paddingBottom: 16,
+  tableRow: {
+    flexDirection: 'row',
+    paddingVertical: 8,
+    borderBottomWidth: 1,
+    backgroundColor: theme.colors.background,
   },
-  filterButton: {
+  tableHeader: {
+    flex: 1,
+    fontWeight: 'bold',
+    color: theme.colors.text,
+    textAlign: 'center',
+  },
+  tableCell: {
+    flex: 1,
+    textAlign: 'center',
+    color: theme.colors.accent,
+  },
+  tabRow: {
+    flexDirection: 'row',
     marginBottom: 16,
+    justifyContent: 'space-between',
+    gap: 8
+  },
+  tabButton: {
+    flex: 1,
+    alignItems: 'center',
+    paddingVertical: 10,
+    backgroundColor: theme.colors.inactiveTabColor,
+    borderRadius: 12
+  },
+  activeTab: {
     backgroundColor: theme.colors.secondary,
   },
-  filterRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 16,
+  tabText: {
+    color: theme.colors.secondary,
   },
-  filterContainer: {
-    marginBottom: 16,
-    padding: 10,
-    backgroundColor: theme.colors.background,
-    borderRadius: 8,
-  },
-  filterOption: {
-    marginVertical: 4,
+  activeTabText: {
+    color: 'white',
   },
 });
 

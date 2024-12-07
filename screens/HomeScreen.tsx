@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
-import { Card, Title, Paragraph, Text, ActivityIndicator } from 'react-native-paper';
+import { Card, Title, Paragraph, Text, ActivityIndicator, Button } from 'react-native-paper';
 import theme from '../theme';
 import PunchButton from './components/PunchButton';
 import FeatherIcon from 'react-native-vector-icons/Feather';
@@ -64,7 +64,7 @@ const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
           <Card.Content>
             <View style={[styles.locationContainer]}>
               <FeatherIcon name="alert-circle" size={18} color={theme.colors.white} style={styles.locationIcon} />
-              <Title style={{ color: theme.colors.white }}>Duty is not assigned to you for today</Title>
+              <Title style={{ color: theme.colors.white, fontSize: 16 }}>Duty is not assigned to you for today</Title>
             </View>
           </Card.Content>
         </Card>
@@ -75,6 +75,15 @@ const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
       <LeaveStatus />
 
       <MyAttendance />
+
+      <Button
+          mode="outlined"
+          onPress={() => navigation.navigate('ApplyLeave')}
+          style={[styles.linkButton, {marginBottom: 25}]}
+          labelStyle={{ color: theme.colors.primary }}
+        >
+          Apply Leave
+        </Button>
 
       {/* <View style={styles.linksContainer}>
         <Button
