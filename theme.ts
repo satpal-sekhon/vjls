@@ -11,7 +11,9 @@ const theme = {
     success: '#72BF78',
     border: '#105691',
     activeTabColor: '#0A3960',
-    inactiveTabColor: '#caf0f8'
+    inactiveTabColor: '#caf0f8',
+    gray: '#6A5B6E',
+    tableText: '#333'
   },
 };
 
