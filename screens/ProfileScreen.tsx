@@ -96,6 +96,15 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
 
       <View style={[styles.spaceHorizontal, styles.spacingMediumTop]}>
         <Button
+          mode="outlined"
+          icon={() => <FeatherIcon name="lock" size={20} color={theme.colors.primary} />}
+          style={[{ borderColor: theme.colors.primary, marginBottom: 18 }]}
+          labelStyle={{ color: theme.colors.primary }}
+          onPress={() => navigation.navigate('ChangePassword')}>
+          Change Password
+        </Button>
+
+        <Button
           mode="contained"
           icon={() => <FeatherIcon name="log-out" size={20} color={theme.colors.white} />}
           style={[{ backgroundColor: theme.colors.primary }]}

@@ -32,7 +32,6 @@ const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
         },
       });
       const { success } = response.data;
-      console.log('..',response.data)
       if (success) {
         setStats(response.data);
       }
@@ -77,13 +76,14 @@ const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
       <MyAttendance />
 
       <Button
-          mode="outlined"
-          onPress={() => navigation.navigate('ApplyLeave')}
-          style={[styles.linkButton, {marginBottom: 25}]}
-          labelStyle={{ color: theme.colors.primary }}
-        >
-          Apply Leave
-        </Button>
+        mode="outlined"
+        icon='calendar-edit'
+        onPress={() => navigation.navigate('ApplyLeave')}
+        style={[styles.linkButton, { marginBottom: 25 }]}
+        labelStyle={{ color: theme.colors.primary }}
+      >
+        Apply Leave
+      </Button>
 
       {/* <View style={styles.linksContainer}>
         <Button
@@ -159,6 +159,7 @@ const styles = StyleSheet.create({
   },
   linkButton: {
     marginVertical: 5,
+    borderColor: theme.colors.primary
   },
 });
 

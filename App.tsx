@@ -5,6 +5,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import HomeScreen from './screens/HomeScreen';
 import LoginScreen from './screens/LoginScreen';
 import ProfileScreen from './screens/ProfileScreen';
+import ChangePasswordScreen from './screens/ChangePasswordScreen';
 import AttendanceScreen from './screens/AttendanceScreen';
 import EarnedPayrollScreen from './screens/EarnedPayrollScreen';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -59,7 +60,7 @@ const HomeTabs = () => (
         tabBarLabel: () => null,
         tabBarIcon: ({ color, size }) => (
           <Ionicons
-            name={color === theme.colors.secondary ? 'calendar-sharp' : 'calendar-outline'}
+            name={color === theme.colors.activeTabColor ? 'calendar-sharp' : 'calendar-outline'}
             color={color}
             size={size}
           />
@@ -72,8 +73,8 @@ const HomeTabs = () => (
       options={{
         tabBarLabel: () => null,
         tabBarIcon: ({ color, size }) => {
-          const IconComponent = color === theme.colors.secondary ? FontAwesome6 : MaterialIcons;
-          const iconName = color === theme.colors.secondary ? 'money-bills' : 'money';
+          const IconComponent = color === theme.colors.activeTabColor ? FontAwesome6 : MaterialIcons;
+          const iconName = color === theme.colors.activeTabColor ? 'money-bills' : 'money';
 
           return (
             <IconComponent
@@ -92,7 +93,7 @@ const HomeTabs = () => (
         tabBarLabel: () => null,
         tabBarIcon: ({ color, size }) => (
           <FontAwesome
-            name={color === theme.colors.secondary ? 'user' : 'user-o'}
+            name={color === theme.colors.activeTabColor ? 'user' : 'user-o'}
             color={color}
             size={size}
           />
@@ -140,6 +141,13 @@ const App: React.FC = () => {
     <NavigationContainer>
       <Stack.Navigator initialRouteName={isUserLoggedIn ? "HomeTabs" : "Login"}>
         <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="ChangePassword" component={ChangePasswordScreen} options={{
+          title: 'Change Password',
+          headerStyle: {
+            backgroundColor: theme.colors.secondary,
+          },
+          headerTintColor: theme.colors.white,
+        }}/>
         <Stack.Screen name="FAQ" component={FAQScreen} options={{ headerShown: false }} />
         <Stack.Screen name="ApplyLeave" component={ApplyLeaveScreen} options={{
           title: 'Apply for Leave',
