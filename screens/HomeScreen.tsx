@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, ScrollView } from 'react-native';
+import { View, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { Card, Title, Paragraph, Text, ActivityIndicator, Button } from 'react-native-paper';
 import theme from '../theme';
 import PunchButton from './components/PunchButton';
@@ -68,6 +68,36 @@ const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
           </Card.Content>
         </Card>
       }
+
+      {/* <Card style={{ backgroundColor: theme.colors.primary }}>
+        <Card.Content>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+            <View style={{ flex: 1, margin: 5 }}>
+              <Title style={{ color: theme.colors.white, fontSize: 14 }}>Punch In</Title>
+              <Title style={{ color: theme.colors.white, fontSize: 14 }}>--:--</Title>
+            </View>
+            <View style={{ flex: 1, margin: 5 }}>
+              <Title style={{ color: theme.colors.white, fontSize: 14 }}>Punch Out</Title>
+              <Title style={{ color: theme.colors.white, fontSize: 14 }}>--:--</Title>
+            </View>
+            <View style={{ flex: 1, margin: 5 }}>
+              <TouchableOpacity style={{
+                shadowColor: '#000',  // Dark shadow color
+                shadowOffset: { width: 0, height: 2 },  // Shadow direction
+                shadowOpacity: 0.25,  // Shadow opacity
+                shadowRadius: 3.5,  // Shadow blur radius
+                elevation: 5,  // Android shadow effect
+                backgroundColor: theme.colors.activeTabColor,
+                borderRadius: 4,
+                paddingVertical: 8
+              }}>
+                <FeatherIcon name='log-out' style={{ color: theme.colors.white, fontSize: 26, textAlign: 'center' }}></FeatherIcon>
+                <Title style={{ color: theme.colors.white, fontSize: 16, textAlign: 'center' }}>Punch Out</Title>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Card.Content>
+      </Card> */}
 
       <UpcomingHolidays />
 

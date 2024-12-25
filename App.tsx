@@ -67,7 +67,7 @@ const HomeTabs = () => (
         ),
       }}
     />
-    <Tab.Screen
+    {/* <Tab.Screen
       name="EarnedPayroll"
       component={EarnedPayrollScreen}
       options={{
@@ -85,7 +85,7 @@ const HomeTabs = () => (
           );
         },
       }}
-    />
+    /> */}
     <Tab.Screen
       name="Profile"
       component={ProfileScreen}
