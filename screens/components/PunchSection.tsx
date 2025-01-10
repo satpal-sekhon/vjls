@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, PermissionsAndroid, Platform, Alert } from 'react-native';
-import { Button } from 'react-native-paper';
+import { View, StyleSheet, PermissionsAndroid, Platform, Alert, TouchableOpacity } from 'react-native';
+import { Button, Card, Title, Dialog, Portal, PaperProvider, Text } from 'react-native-paper';
 import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
 import theme from '../../theme';
 import Geolocation from '@react-native-community/geolocation';
@@ -8,10 +8,17 @@ import { launchCamera, ImagePickerResponse, CameraOptions } from 'react-native-i
 import axios from 'axios';
 import config from '../../config';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import FeatherIcon from 'react-native-vector-icons/Feather';
 
-const PunchButton: React.FC = () => {
+interface PunchSectionProps {
+    duty: any;
+}
+
+const PunchSection: React.FC<PunchSectionProps> = ({ duty }) => {
     const [isPunchedIn, setIsPunchedIn] = useState(false);
     const [isPunching, setIsPunching] = useState(false);
+    const [errMessage, setErrMessage] = useState('');
+    const [punchInfo, setPunchInfo] = useState(null) as any;
 
     const requestLocationPermission = async () => {
         if (Platform.OS === 'android') {
@@ -73,7 +80,7 @@ const PunchButton: React.FC = () => {
         const getCurrentDateTime = (): string => {
             const now = new Date();
             const year = now.getFullYear();
-            const month = String(now.getMonth() + 1).padStart(2, '0'); // Months are zero-indexed
+            const month = String(now.getMonth() + 1).padStart(2, '0');
             const day = String(now.getDate()).padStart(2, '0');
             const hours = String(now.getHours()).padStart(2, '0');
             const minutes = String(now.getMinutes()).padStart(2, '0');
@@ -119,15 +126,18 @@ const PunchButton: React.FC = () => {
                     });
 
                     let { success } = response.data;
-                    if(!success){
+                    if (!success) {
                         setIsPunching(false);
-                        Alert.alert(response.data.message);
+                        setErrMessage(response.data.message);
                         return;
                     }
                     
+                    setErrMessage('');
+
                     if (prefix === 'in') {
                         let { data } = response.data;
                         await AsyncStorage.setItem('@punchInfo', JSON.stringify(data));
+                        setPunchInfo(data);
                     } else {
                         await AsyncStorage.removeItem('@punchInfo');
                     }
@@ -135,62 +145,110 @@ const PunchButton: React.FC = () => {
                     setIsPunchedIn((prevState) => !prevState);
                     setIsPunching(false);
                 } catch (error) {
-                    console.log('..',error)
                     setIsPunching(false);
                     if (axios.isAxiosError(error) && error.response?.status) {
                         Alert.alert(error.response.data.message || 'Something went wrong!');
                     } else {
                         Alert.alert("Error", `Failed to punch ${prefix}.`);
                     }
-                    //Alert.alert("Error", "Failed to punch out.");
                 }
             }
         });
     };
 
-    useEffect(() => {
-        const checkPunchStatus = async () => {
-            try {
-                const punchInfo = await AsyncStorage.getItem('@punchInfo');
-                if (punchInfo) {
-                    setIsPunchedIn(true);
-                } else {
-                    setIsPunchedIn(false);
-                }
-            } catch (error) {
-                console.error('Error retrieving punch status:', error);
-                Alert.alert('Error', 'Failed to retrieve punch status.');
+    const checkPunchStatus = async () => {
+        try {
+            const punchInfo = await AsyncStorage.getItem('@punchInfo');
+            if (punchInfo) {
+                setPunchInfo(JSON.parse(punchInfo));
+                setIsPunchedIn(true);
+            } else {
+                setIsPunchedIn(false);
             }
-        };
+        } catch (error) {
+            console.error('Error retrieving punch status:', error);
+            Alert.alert('Error', 'Failed to retrieve punch status.');
+        }
+    };
 
+    useEffect(() => {
         checkPunchStatus();
-    }, [])
+    }, []);
 
+   
+    const getTimeFromDate = (dateString : String) => {
+        const date = new Date(dateString as string);
+    
+        let hours = date.getHours();
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+    
+        const ampm = hours >= 12 ? 'PM' : 'AM';
+    
+        hours = hours % 12;
+        hours = hours ? hours : 12;
+    
+        const time = `${hours}:${minutes} ${ampm}`;
+    
+        return time;
+    };    
 
-    return (<View style={styles.buttonContainer}>
-        {!isPunchedIn ? (
-            <Button
-                mode="contained"
-                onPress={handleTogglePunch}
-                style={[styles.button, { backgroundColor: theme.colors.secondary }]}
-                labelStyle={{ color: theme.colors.white }}
-                icon={isPunching ? undefined : () => <SimpleLineIcons name="energy" size={20} color={theme.colors.white} />}
-                disabled={isPunching}
-            >
-                {isPunching ? `Please wait...` : `Punch In`}
-            </Button>
-        ) : (
-            <Button
-                mode="outlined"
-                onPress={handleTogglePunch}
-                style={[styles.button, { backgroundColor: theme.colors.secondary }]}
-                labelStyle={{ color: theme.colors.white }}
-                icon={() => <SimpleLineIcons name="clock" size={20} color={theme.colors.white} />}
-                disabled={isPunching}
-            >
-                {isPunching ? `Please wait...` : `Punch Out`}
-            </Button>
-        )}
+    return (<View>
+        {duty && duty.client_site ? <>
+            <Card style={{ backgroundColor: theme.colors.primary }}>
+                <Card.Content>
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                        <View style={{ flex: 1, margin: 5 }}>
+                            <Title style={{ color: theme.colors.white, fontSize: 14 }}>Punch In</Title>
+                            <Title style={{ color: theme.colors.white, fontSize: 14 }}>{punchInfo.in_time ? getTimeFromDate(punchInfo.in_time) : `--:--`}</Title>
+                        </View>
+                        <View style={{ flex: 1, margin: 5 }}>
+                            <Title style={{ color: theme.colors.white, fontSize: 14 }}>Punch Out</Title>
+                            <Title style={{ color: theme.colors.white, fontSize: 14 }}>--:--</Title>
+                        </View>
+                        <View style={{ flex: 1, margin: 5 }}>
+                            <TouchableOpacity style={{
+                                shadowColor: '#000',
+                                shadowOffset: { width: 0, height: 2 },
+                                shadowOpacity: 0.25,
+                                shadowRadius: 3.5,
+                                elevation: 5,
+                                backgroundColor: theme.colors.activeTabColor,
+                                borderRadius: 4,
+                                paddingVertical: 8
+                            }} onPress={handleTogglePunch}>
+
+                                {!isPunchedIn ? (<>
+                                    <FeatherIcon name='log-out' style={{ color: theme.colors.white, fontSize: 26, textAlign: 'center' }}></FeatherIcon>
+                                    <Title style={{ color: theme.colors.white, fontSize: 16, textAlign: 'center' }}>{`Punch In`}</Title>
+                                </>) : (<>
+                                    <FeatherIcon name='log-out' style={{ color: theme.colors.white, fontSize: 26, textAlign: 'center' }}></FeatherIcon>
+                                    <Title style={{ color: theme.colors.white, fontSize: 16, textAlign: 'center' }}>{`Punch Out`}</Title>
+                                </>)}
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                </Card.Content>
+            </Card>
+        </> : <Card style={{ backgroundColor: theme.colors.warning }}>
+            <Card.Content>
+                <View style={[styles.locationContainer]}>
+                    <FeatherIcon name="alert-circle" size={18} color={theme.colors.white} style={styles.locationIcon} />
+                    <Title style={{ color: theme.colors.white, fontSize: 16 }}>Duty is not assigned to you for today</Title>
+                </View>
+            </Card.Content>
+        </Card>
+        }
+
+        {errMessage &&
+            <Card style={{ backgroundColor: theme.colors.warning, marginTop: 16 }}>
+                <Card.Content>
+                    <View style={[styles.locationContainer]}>
+                        <FeatherIcon name="alert-circle" size={18} color={theme.colors.white} style={styles.locationIcon} />
+                        <Title style={{ color: theme.colors.white, fontSize: 16 }}>{errMessage}</Title>
+                    </View>
+                </Card.Content>
+            </Card>}
+
     </View>);
 };
 
@@ -211,6 +269,15 @@ const styles = StyleSheet.create({
     preview: {
         flex: 1,
     },
+    locationContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
+    locationIcon: {
+        paddingRight: 6,
+        fontWeight: '900'
+    },
 });
 
-export default PunchButton;
+export default PunchSection;

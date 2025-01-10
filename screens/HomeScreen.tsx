@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import React, { useEffect, useState, useCallback } from 'react';
+import { View, StyleSheet, ScrollView, TouchableOpacity, RefreshControl } from 'react-native';
 import { Card, Title, Paragraph, Text, ActivityIndicator, Button } from 'react-native-paper';
 import theme from '../theme';
-import PunchButton from './components/PunchButton';
+import PunchSection from './components/PunchSection';
 import FeatherIcon from 'react-native-vector-icons/Feather';
 import UpcomingHolidays from './components/UpcomingHolidays';
 import LeaveStatus from './components/LeaveCount';
@@ -15,89 +15,50 @@ import config from '../config';
 const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [user, setUser] = useState() as any;
   const [stats, setStats] = useState({}) as any;
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  const fetchUserInfo = async () => {
+    const userInfo = await AsyncStorage.getItem('@userInfo');
+    if (userInfo) {
+      setUser(JSON.parse(userInfo));
+    }
+  };
+
+  const fetchStats = async () => {
+    const userToken = await AsyncStorage.getItem('@userToken');
+    const response = await axios.get(`${config.apiEndpoint}stats`, {
+      headers: {
+        'Authorization': `Bearer ${userToken}`,
+      },
+    });
+    const { success } = response.data;
+    if (success) {
+      setStats(response.data);
+    }
+  }
+
+  const onRefresh = useCallback(async() => {
+    setIsRefreshing(true);
+    
+    await fetchUserInfo();
+    await fetchStats();
+    
+    setIsRefreshing(false);
+  }, []);
+
 
   useEffect(() => {
-    const fetchUserInfo = async () => {
-      const userInfo = await AsyncStorage.getItem('@userInfo');
-      if (userInfo) {
-        setUser(JSON.parse(userInfo));
-      }
-    };
-
-    const fetchStats = async () => {
-      const userToken = await AsyncStorage.getItem('@userToken');
-      const response = await axios.get(`${config.apiEndpoint}stats`, {
-        headers: {
-          'Authorization': `Bearer ${userToken}`,
-        },
-      });
-      const { success } = response.data;
-      if (success) {
-        setStats(response.data);
-      }
-    }
-
     fetchUserInfo();
     fetchStats();
   }, [])
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView style={styles.container} refreshControl={<RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} />}>
       {!user ?
         <Skeleton width={180} height={18} style={{ marginBottom: 6 }} /> :
         <Title style={{ marginBottom: 6 }}>Welcome {user?.first_name}!</Title>}
 
-      {stats.today_duty && stats.today_duty.client_site ? <>
-        <Card style={{ backgroundColor: theme.colors.white }}>
-          <Card.Content>
-            <View style={[styles.locationContainer]}>
-              <FeatherIcon name="map-pin" size={18} color={theme.colors.primary} style={styles.locationIcon} />
-              <Title>Today's Location</Title>
-            </View>
-            <Paragraph style={[styles.locationText]}>Today is your duty at: <Text style={{ fontWeight: 'bold' }}>{stats.today_duty.client_site.location_code}</Text></Paragraph>
-          </Card.Content>
-        </Card>
-        <PunchButton />
-      </>
-        : <Card style={{ backgroundColor: theme.colors.warning }}>
-          <Card.Content>
-            <View style={[styles.locationContainer]}>
-              <FeatherIcon name="alert-circle" size={18} color={theme.colors.white} style={styles.locationIcon} />
-              <Title style={{ color: theme.colors.white, fontSize: 16 }}>Duty is not assigned to you for today</Title>
-            </View>
-          </Card.Content>
-        </Card>
-      }
-
-      {/* <Card style={{ backgroundColor: theme.colors.primary }}>
-        <Card.Content>
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-            <View style={{ flex: 1, margin: 5 }}>
-              <Title style={{ color: theme.colors.white, fontSize: 14 }}>Punch In</Title>
-              <Title style={{ color: theme.colors.white, fontSize: 14 }}>--:--</Title>
-            </View>
-            <View style={{ flex: 1, margin: 5 }}>
-              <Title style={{ color: theme.colors.white, fontSize: 14 }}>Punch Out</Title>
-              <Title style={{ color: theme.colors.white, fontSize: 14 }}>--:--</Title>
-            </View>
-            <View style={{ flex: 1, margin: 5 }}>
-              <TouchableOpacity style={{
-                shadowColor: '#000',  // Dark shadow color
-                shadowOffset: { width: 0, height: 2 },  // Shadow direction
-                shadowOpacity: 0.25,  // Shadow opacity
-                shadowRadius: 3.5,  // Shadow blur radius
-                elevation: 5,  // Android shadow effect
-                backgroundColor: theme.colors.activeTabColor,
-                borderRadius: 4,
-                paddingVertical: 8
-              }}>
-                <FeatherIcon name='log-out' style={{ color: theme.colors.white, fontSize: 26, textAlign: 'center' }}></FeatherIcon>
-                <Title style={{ color: theme.colors.white, fontSize: 16, textAlign: 'center' }}>Punch Out</Title>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </Card.Content>
-      </Card> */}
+      <PunchSection duty={stats.today_duty} />
 
       <UpcomingHolidays />
 
